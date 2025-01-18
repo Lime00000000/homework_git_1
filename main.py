@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QApplication, QDialog, QTableWidgetItem
+from PyQt6.QtWidgets import QApplication, QTableWidgetItem, QMainWindow
 import sys
 import sqlite3
 from main_design import Ui_Dialog
@@ -6,7 +6,7 @@ from addEditCoffeeForm import Ui_Dialog1
 from saveCoffeeForm import Ui_Dialog2
 
 
-class Create(QDialog, Ui_Dialog1):
+class Create(QMainWindow, Ui_Dialog1):
     def __init__(self, *args):
         super().__init__()
         self.setupUi(self)
@@ -22,10 +22,10 @@ class Create(QDialog, Ui_Dialog1):
             tabl.close()
             self.close()
         except Exception:
-            pass  # В QDialog нету statusBar()
+            self.statusBar().showMessage('Некоректные данные')
 
 
-class Swap(QDialog, Ui_Dialog2):
+class Swap(QMainWindow, Ui_Dialog2):
     def __init__(self, *args):
         super().__init__()
         self.setupUi(self)
@@ -43,10 +43,10 @@ class Swap(QDialog, Ui_Dialog2):
             tabl.close()
             self.close()
         except Exception:
-            pass  # В QDialog нету statusBar()
+            self.statusBar().showMessage('Некоректные данные')
 
 
-class MyWidget(QDialog, Ui_Dialog):
+class MyWidget(QMainWindow, Ui_Dialog):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -65,14 +65,17 @@ class MyWidget(QDialog, Ui_Dialog):
             self.Sw.show()
 
     def view(self):
-        g = self.cur.execute('''SELECT * FROM coffee''').fetchall()
-        self.tableWidget.setRowCount(len(g))
-        b = 0
-        for el in g:
-            for el1 in el:
-                self.tableWidget.setItem(g.index(el), b, QTableWidgetItem(str(el1)))
-                b += 1
+        try:
+            g = self.cur.execute('''SELECT * FROM coffee''').fetchall()
+            self.tableWidget.setRowCount(len(g))
             b = 0
+            for el in g:
+                for el1 in el:
+                    self.tableWidget.setItem(g.index(el), b, QTableWidgetItem(str(el1)))
+                    b += 1
+                b = 0
+        except Exception:
+            self.statusBar().showMessage('Таблицы нет или она неправильная')
 
 
 if __name__ == '__main__':
